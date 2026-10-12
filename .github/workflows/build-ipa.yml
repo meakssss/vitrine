@@ -1,17 +1,25 @@
 name: Build IPA from your own Spotify IPA
 
+# The decrypted IPA comes from this repo's own releases: make a draft release (Releases → Draft a new
+# release, any tag, e.g. "ipa"), drop the .ipa into its assets and save it as a draft. Drafts are seen only by
+# people with push access, so the IPA stays private even in a public fork. A direct link works too.
 on:
   workflow_dispatch:
     inputs:
-      ipa_url:
-        description: "Direct link to a decrypted Spotify IPA"
+      ipa:
+        description: "Tag of the draft release the .ipa is attached to (or a direct link to it)"
         required: true
+        default: ipa
         type: string
       upload_method:
         description: "Where to put the result"
         default: artifacts
         type: choice
         options: [artifacts, filebin, both]
+
+# Draft releases are listed only for tokens with push access.
+permissions:
+  contents: write
 
 env:
   THEOS: ${{ github.workspace }}/theos
@@ -39,10 +47,26 @@ jobs:
           brew install make dpkg ldid
           python3 -m pip install --break-system-packages git+https://github.com/asdfzxcvbn/pyzule-rw.git
 
-      - name: Download IPA
+      - name: Get IPA
+        env:
+          IPA: ${{ inputs.ipa }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           mkdir -p ipa
-          curl -fsSL "${{ inputs.ipa_url }}" -o ipa/spotify.ipa
+          case "$IPA" in
+            http://*|https://*)
+              curl -fsSL "$IPA" -o ipa/spotify.ipa ;;
+            *)
+              [[ "$IPA" =~ ^[A-Za-z0-9._/-]+$ ]] || { echo "::error::Not a release tag or a link"; exit 1; }
+              assets=$(gh api "repos/$GITHUB_REPOSITORY/releases" --paginate \
+                --jq ".[] | select(.tag_name == \"$IPA\") | .assets[] | select(.name | ascii_downcase | endswith(\".ipa\")) | .url")
+              count=$(printf '%s' "$assets" | grep -c . || true)
+              if [ "$count" -ne 1 ]; then
+                echo "::error::Expected one .ipa on the release tagged '$IPA' in $GITHUB_REPOSITORY, found $count"
+                exit 1
+              fi
+              gh api -H "Accept: application/octet-stream" "$assets" > ipa/spotify.ipa ;;
+          esac
           case "$(file --mime-type -b ipa/spotify.ipa)" in application/zip|application/x-ios-app) ;; *) echo "::error::Not an IPA"; exit 1 ;; esac
 
       - run: make release
