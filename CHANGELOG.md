@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.0.0-beta.13](https://github.com/meakssss/vitrine/compare/v1.0.0-beta.12...v1.0.0-beta.13) (2026-10-12)
+
+
+### Features
+
+* the links in a Genius line meaning can be tapped ([#31](https://github.com/meakssss/vitrine/issues/31)) ([39704a2](https://github.com/meakssss/vitrine/commit/39704a20228752b6583e66552f3c68b659b7d196))
+* the lock screen's star switches between moving artwork and lyrics ([720017e](https://github.com/meakssss/vitrine/commit/720017e5439e97898086945b2244e26f7e042dc6)), closes [#33](https://github.com/meakssss/vitrine/issues/33)
+* the redesign's mini player can hide its like button ([0c472c4](https://github.com/meakssss/vitrine/commit/0c472c4558e72cdaa44f2d0b3b2b9b9ab079ef36))
+* the Visualizer glows in the cover's colors with the kick at its centre ([4c28e09](https://github.com/meakssss/vitrine/commit/4c28e0978ec94dff97ef1ce87e72e6bbdb1e3fc1))
+
+
+### Fixes
+
+* the redesigned player's volume row never covers the controls ([#32](https://github.com/meakssss/vitrine/issues/32)) ([9b614c1](https://github.com/meakssss/vitrine/commit/9b614c1d7ae4b78582acfd9683d84f1ff89a583a))
+
 ## [1.0.0-beta.12](https://github.com/My-Name-Is-Jeff/vitrine/compare/v1.0.0-beta.11...v1.0.0-beta.12) (2026-10-11)
 
 
